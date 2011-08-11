@@ -5,8 +5,8 @@ This class is for [prebinding](http://metajack.im/2009/12/14/fastest-xmpp-sessio
 
 Usage
 =====
-1. Clone the repo
-2. In your file where you want to do the prebinding:
+* Clone the repo
+* In your file where you want to do the prebinding:
 
 ```php
 /**
@@ -25,13 +25,13 @@ $xmppPrebind->connect($username, $password);
 $sessionInfo = $xmppPrebind->getSessionInfo(); // array containing sid, rid and jid
 ```
 
-3. If you use [Candy](http://amiadogroup.github.com/candy), change the `Candy.Core.Connect()` line to the following:
+* If you use [Candy](http://amiadogroup.github.com/candy), change the `Candy.Core.Connect()` line to the following:
 
 ```javascript
 Candy.Core.attach('<?php echo $sessionInfo['jid'] ?>', '<?php echo $sessionInfo['sid'] ?>', '<?php echo $sessionInfo['rid'] ?>');
 ```
 
-4. You should now have a working prebinding with PHP
+* You should now have a working prebinding with PHP
 
 Debugging
 =========
