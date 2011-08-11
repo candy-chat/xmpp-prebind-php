@@ -8,26 +8,24 @@ Usage
 1. Clone the repo
 2. In your file where you want to do the prebinding:
 
-`
-/**
- * Comment here for explanation of the options.
- *
- * Create a new XMPP Object with the required params
- *
- * @param string $jabberHost Jabber Server Host
- * @param string $boshUri    Full URI to the http-bind
- * @param string $resource   Resource identifier
- * @param bool   $useSsl     Use SSL (not working yet, TODO)
- * @param bool   $debug      Enable debug
- */
-$xmppPrebind = new XmppPrebind('your-jabber-host.tld', 'http://your-jabber-host/http-bind/', 'Your XMPP Clients resource name', false, false);
-$xmppPrebind->connect($username, $password);
-$sessionInfo = $xmppPrebind->getSessionInfo(); // array containing sid, rid and jid
-`
+	/**
+	 * Comment here for explanation of the options.
+	 *
+	 * Create a new XMPP Object with the required params
+	 *
+	 * @param string $jabberHost Jabber Server Host
+	 * @param string $boshUri    Full URI to the http-bind
+	 * @param string $resource   Resource identifier
+	 * @param bool   $useSsl     Use SSL (not working yet, TODO)
+	 * @param bool   $debug      Enable debug
+	 */
+	$xmppPrebind = new XmppPrebind('your-jabber-host.tld', 'http://your-jabber-host/http-bind/', 'Your XMPP Clients resource name', false, false);
+	$xmppPrebind->connect($username, $password);
+	$sessionInfo = $xmppPrebind->getSessionInfo(); // array containing sid, rid and jid
 
 3. If you use (Candy)[http://amiadogroup.github.com/candy], change the `Candy.Core.Connect()` line to the following:
 
-`Candy.Core.attach('<?php echo $sessionInfo['jid'] ?>', '<?php echo $sessionInfo['sid'] ?>', '<?php echo $sessionInfo['rid'] ?>');`
+	Candy.Core.attach('<?php echo $sessionInfo['jid'] ?>', '<?php echo $sessionInfo['sid'] ?>', '<?php echo $sessionInfo['rid'] ?>');
 
 4. You should now have a working prebinding with PHP
 
