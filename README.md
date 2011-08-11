@@ -8,6 +8,7 @@ Usage
 1. Clone the repo
 2. In your file where you want to do the prebinding:
 
+```php
 	/**
 	 * Comment here for explanation of the options.
 	 *
@@ -22,10 +23,13 @@ Usage
 	$xmppPrebind = new XmppPrebind('your-jabber-host.tld', 'http://your-jabber-host/http-bind/', 'Your XMPP Clients resource name', false, false);
 	$xmppPrebind->connect($username, $password);
 	$sessionInfo = $xmppPrebind->getSessionInfo(); // array containing sid, rid and jid
+```
 
 3. If you use (Candy)[http://amiadogroup.github.com/candy], change the `Candy.Core.Connect()` line to the following:
 
+```javascript
 	Candy.Core.attach('<?php echo $sessionInfo['jid'] ?>', '<?php echo $sessionInfo['sid'] ?>', '<?php echo $sessionInfo['rid'] ?>');
+```
 
 4. You should now have a working prebinding with PHP
 
