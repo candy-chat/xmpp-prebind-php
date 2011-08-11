@@ -138,7 +138,7 @@ class XmppPrebind {
 		} elseif (in_array(self::ENCRYPTION_PLAIN, $this->mechanisms)) {
 			$this->encryption = self::ENCRYPTION_PLAIN;
 		} else {
-			throw new BoshAutoLoginConnectionException("No encryption supported by the server is supported by this library.");
+			throw new XmppPrebindConnectionException("No encryption supported by the server is supported by this library.");
 		}
 
 		$this->debug($this->encryption, 'encryption used');
@@ -414,7 +414,7 @@ class XmppPrebind {
 		$body = self::getBodyFromXml($challengeResponse);
 		$challenge = base64_decode((string)$body->firstChild->nodeValue);
 		if (strpos($challenge, 'rspauth') === false) {
-			throw new BoshAutoLoginConnectionException('Invalid challenge response received');
+			throw new XmppPrebindConnectionException('Invalid challenge response received');
 		}
 
 		$domDocument = $this->buildBody();
@@ -573,7 +573,7 @@ class XmppPrebind {
 	/**
 	 * Parse XML and return DOMNode of the body
 	 *
-	 * @uses BoshAutoogin::getBodyFromDomDocument()
+	 * @uses XmppPrebind::getBodyFromDomDocument()
 	 * @param string $xml
 	 * @return DOMNode
 	 */
@@ -597,6 +597,8 @@ class XmppPrebind {
 }
 
 /**
- * Standard BoshAutoLogin Exception
+ * Standard XmppPrebind Exception
  */
 class XmppPrebindException extends Exception{}
+
+class XmppPrebindConnectionException extends XmppPrebindException {}
