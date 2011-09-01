@@ -22,6 +22,7 @@ Usage
  */
 $xmppPrebind = new XmppPrebind('your-jabber-host.tld', 'http://your-jabber-host/http-bind/', 'Your XMPP Clients resource name', false, false);
 $xmppPrebind->connect($username, $password);
+$xmppPrebind->auth();
 $sessionInfo = $xmppPrebind->getSessionInfo(); // array containing sid, rid and jid
 ```
 
