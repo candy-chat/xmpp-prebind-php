@@ -120,14 +120,18 @@ class XmppPrebind {
 	 *
 	 * @param string $username Username without jabber host
 	 * @param string $password Password
+	 * @param string $route Route
 	 */
-	public function connect($username, $password) {
+	public function connect($username, $password, $route = false) {
 		$this->jid      = $username . '@' . $this->jabberHost;
-		if($this->resource != null)
-            		$this->jid .= '/' . $this->resource;
+
+		if($this->resource) {
+            $this->jid .= '/' . $this->resource;
+		}
+
 		$this->password = $password;
 
-		$response = $this->sendInitialConnection();
+		$response = $this->sendInitialConnection($route);
 
 		$body = self::getBodyFromXml($response);
 		$this->sid = $body->getAttribute('sid');
@@ -298,9 +302,10 @@ class XmppPrebind {
 	/**
 	 * Send initial connection string
 	 *
+	 * @param string $route
 	 * @return string Response
 	 */
-	protected function sendInitialConnection() {
+	protected function sendInitialConnection($route = false) {
 		$domDocument = $this->buildBody();
 		$body = self::getBodyFromDomDocument($domDocument);
 
@@ -311,6 +316,11 @@ class XmppPrebind {
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'xmlns:xmpp', self::XMLNS_BOSH));
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'xmpp:version', '1.0'));
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'wait', $waitTime));
+		
+		if ($route)
+		{
+			$body->appendChild(self::getNewTextAttribute($domDocument, 'route', $route));
+		}
 
 		return $this->send($domDocument->saveXML());
 	}
