@@ -116,7 +116,9 @@ class XmppPrebind {
 	 * @param string $password Password
 	 */
 	public function connect($username, $password) {
-		$this->jid      = $username . '@' . $this->jabberHost . '/' . $this->resource;
+		$this->jid      = $username . '@' . $this->jabberHost;
+		if($this->resource != null)
+            		$this->jid .= '/' . $this->resource;
 		$this->password = $password;
 
 		$response = $this->sendInitialConnection();
