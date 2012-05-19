@@ -360,7 +360,7 @@ class XmppPrebind {
 	private function sendChallengeAndBuildDigestMd5Auth(Auth_SASL_Common $auth) {
 		$challenge = $this->sendChallenge();
 
-		$authString = $auth->getResponse(self::getNodeFromJid($this->jid), $this->password, $challenge, $this->jabberHost, self::SERVICE_NAME, $this->jid);
+		$authString = $auth->getResponse(self::getNodeFromJid($this->jid), $this->password, $challenge, $this->jabberHost, self::SERVICE_NAME);
 		$this->debug($authString, 'DIGEST-MD5 Auth String');
 
 		$authString = base64_encode($authString);
