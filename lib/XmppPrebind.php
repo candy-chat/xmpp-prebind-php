@@ -65,6 +65,12 @@ class XmppPrebind {
 
 	protected $mechanisms = array();
 
+	/**
+	 * Session creation response
+	 * 
+	 * @var DOMDocument
+	 */
+	public $response;
 
 	/**
 	 * Create a new XmppPrebind Object with the required params
@@ -144,6 +150,9 @@ class XmppPrebind {
 		}
 
 		$this->debug($this->encryption, 'encryption used');
+
+		// Assign session creation response
+		$this->response = $body;
 	}
 
 	/**
