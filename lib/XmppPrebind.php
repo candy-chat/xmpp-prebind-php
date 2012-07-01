@@ -453,6 +453,11 @@ class XmppPrebind {
 
 		$response = curl_exec($ch);
 
+		// Check if curl failed to get response
+		if ($response === false) {
+			throw new XmppPrebindConnectionException("Cannot connect to service");
+		}
+
 		curl_close($ch);
 
 		if ($this->useGzip) {
