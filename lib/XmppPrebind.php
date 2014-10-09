@@ -133,13 +133,8 @@ class XmppPrebind {
 		$this->sid = $body->getAttribute('sid');
 		$this->debug($this->sid, 'sid');
 
-		$child = $body->firstChild->firstChild;
-		if (is_object($child)) {
-			$mechanisms = $child->getElementsByTagName('mechanism');
-		} else {
-			throw new Exception('Invalid response');
-		}
-
+		$mechanisms = $body->getElementsByTagName('mechanism');
+		
 		foreach ($mechanisms as $value) {
 			$this->mechanisms[] = $value->nodeValue;
 		}
