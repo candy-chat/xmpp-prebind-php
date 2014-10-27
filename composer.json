@@ -1,0 +1,11 @@
+{
+    "name": "piotr-cz/xmpp-prebind-php",
+    "description": "This class is for prebinding a XMPP Session with PHP.",
+    "authors": [
+        {
+            "name": "piotr",
+            "email": "hello@piotr.cz"
+        }
+    ],
+    "require": {}
+}
