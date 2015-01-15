@@ -120,11 +120,17 @@ class XmppPrebind {
 		$this->password = $password;
 
 		$response = $this->sendInitialConnection();
+        if ( empty( $response ) )
+			throw new XmppPrebindConnectionException("No response from server.");
 
 		$body = self::getBodyFromXml($response);
+        if ( empty( $body ) )
+			throw new XmppPrebindConnectionException("No body could be found in response from server.");
 		$this->sid = $body->getAttribute('sid');
 		$this->debug($this->sid, 'sid');
 
+        if ( empty( $body->firstChild ) || empty( $body->firstChild->firstChild ) )
+			throw new XmppPrebindConnectionException("Child not found in response from server.");
 		$mechanisms = $body->firstChild->firstChild->getElementsByTagName('mechanism');
 
 		foreach ($mechanisms as $value) {
