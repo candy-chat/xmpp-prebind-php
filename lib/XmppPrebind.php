@@ -272,7 +272,7 @@ class XmppPrebind {
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'xmlns:xmpp', self::XMLNS_BOSH));
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'xmpp:restart', 'true'));
 
-		$restartResponse = $this->send($domDocument->saveXML($body));
+		$restartResponse = $this->send($domDocument->saveXML());
 
 		$restartBody = self::getBodyFromXml($restartResponse);
 		foreach ($restartBody->childNodes as $bodyChildNodes) {
@@ -315,7 +315,7 @@ class XmppPrebind {
 			$iq->appendChild($bind);
 			$body->appendChild($iq);
 
-			return $this->send($domDocument->saveXML($body));
+			return $this->send($domDocument->saveXML());
 		}
 		return false;
 	}
@@ -339,7 +339,7 @@ class XmppPrebind {
 			$iq->appendChild($session);
 			$body->appendChild($iq);
 
-			return $this->send($domDocument->saveXML($body));
+			return $this->send($domDocument->saveXML());
 		}
 		return false;
 	}
@@ -367,7 +367,7 @@ class XmppPrebind {
 			$body->appendChild(self::getNewTextAttribute($domDocument, 'route', $route));
 		}
 
-		return $this->send($domDocument->saveXML($body));
+		return $this->send($domDocument->saveXML());
 	}
 
 	/**
@@ -384,7 +384,7 @@ class XmppPrebind {
 		$auth->appendChild(self::getNewTextAttribute($domDocument, 'mechanism', $this->encryption));
 		$body->appendChild($auth);
 
-		$response = $this->send($domDocument->saveXML($body));
+		$response = $this->send($domDocument->saveXML());
 
 		$body = $this->getBodyFromXml($response);
 		$challenge = base64_decode($body->firstChild->nodeValue);
@@ -439,7 +439,7 @@ class XmppPrebind {
 		$body->appendChild($response);
 
 
-		$challengeResponse = $this->send($domDocument->saveXML($body));
+		$challengeResponse = $this->send($domDocument->saveXML());
 
 		return $this->replyToChallengeResponse($challengeResponse);
 	}
@@ -467,7 +467,7 @@ class XmppPrebind {
 
 		$body->appendChild($response);
 
-		$challengeResponse = $this->send($domDocument->saveXML($body));
+		$challengeResponse = $this->send($domDocument->saveXML());
 
 		return $this->replyToChallengeResponse($challengeResponse);
 	}
