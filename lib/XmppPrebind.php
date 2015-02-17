@@ -65,9 +65,21 @@ class XmppPrebind {
 
 	protected $mechanisms = array();
 
+	// the Bosh attributes for use in a client using this prebound session
+	protected $wait,
+			$requests,
+			$ver,
+			$polling,
+			$inactivity,
+			$hold,
+			$to,
+			$ack,
+			$accept,
+			$maxpause;
+
 	/**
 	 * Session creation response
-	 * 
+	 *
 	 * @var DOMDocument
 	 */
 	public $response;
@@ -126,7 +138,7 @@ class XmppPrebind {
 		$this->jid      = $username . '@' . $this->jabberHost;
 
 		if($this->resource) {
-            $this->jid .= '/' . $this->resource;
+			$this->jid .= '/' . $this->resource;
 		}
 
 		$this->password = $password;
@@ -135,10 +147,22 @@ class XmppPrebind {
 
 		$body = self::getBodyFromXml($response);
 		$this->sid = $body->getAttribute('sid');
+
+		// set the Bosh Attributes
+		$this->wait = $body->getAttribute('wait');
+		$this->requests = $body->getAttribute('requests');
+		$this->ver = $body->getAttribute('ver');
+		$this->polling = $body->getAttribute('polling');
+		$this->inactivity = $body->getAttribute('inactivity');
+		$this->hold = $body->getAttribute('hold');
+		$this->to = $body->getAttribute('to');
+		$this->accept = $body->getAttribute('accept');
+		$this->maxpause = $body->getAttribute('maxpause');
+
 		$this->debug($this->sid, 'sid');
 
 		$mechanisms = $body->getElementsByTagName('mechanism');
-		
+
 		foreach ($mechanisms as $value) {
 			$this->mechanisms[] = $value->nodeValue;
 		}
@@ -195,6 +219,27 @@ class XmppPrebind {
 	}
 
 	/**
+	 * Get BOSH parameters to properly setup the BOSH client
+	 *
+	 * @return array
+	 */
+	public function getBoshInfo()
+	{
+		return array(
+				'wait' => $this->wait,
+				'requests' => $this->requests,
+				'ver' => $this->ver,
+				'polling' => $this->polling,
+				'inactivity' => $this->inactivity,
+				'hold' => $this->hold,
+				'to' => $this->to,
+				'ack' => $this->ack,
+				'accept' => $this->accept,
+				'maxpause' => $this->maxpause,
+		);
+	}
+
+	/**
 	 * Get jid, sid and rid for attaching
 	 *
 	 * @return array
@@ -227,7 +272,7 @@ class XmppPrebind {
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'xmlns:xmpp', self::XMLNS_BOSH));
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'xmpp:restart', 'true'));
 
-		$restartResponse = $this->send($domDocument->saveXML());
+		$restartResponse = $this->send($domDocument->saveXML($body));
 
 		$restartBody = self::getBodyFromXml($restartResponse);
 		foreach ($restartBody->childNodes as $bodyChildNodes) {
@@ -270,7 +315,7 @@ class XmppPrebind {
 			$iq->appendChild($bind);
 			$body->appendChild($iq);
 
-			return $this->send($domDocument->saveXML());
+			return $this->send($domDocument->saveXML($body));
 		}
 		return false;
 	}
@@ -294,7 +339,7 @@ class XmppPrebind {
 			$iq->appendChild($session);
 			$body->appendChild($iq);
 
-			return $this->send($domDocument->saveXML());
+			return $this->send($domDocument->saveXML($body));
 		}
 		return false;
 	}
@@ -316,13 +361,13 @@ class XmppPrebind {
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'xmlns:xmpp', self::XMLNS_BOSH));
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'xmpp:version', '1.0'));
 		$body->appendChild(self::getNewTextAttribute($domDocument, 'wait', $waitTime));
-		
+
 		if ($route)
 		{
 			$body->appendChild(self::getNewTextAttribute($domDocument, 'route', $route));
 		}
 
-		return $this->send($domDocument->saveXML());
+		return $this->send($domDocument->saveXML($body));
 	}
 
 	/**
@@ -339,7 +384,7 @@ class XmppPrebind {
 		$auth->appendChild(self::getNewTextAttribute($domDocument, 'mechanism', $this->encryption));
 		$body->appendChild($auth);
 
-		$response = $this->send($domDocument->saveXML());
+		$response = $this->send($domDocument->saveXML($body));
 
 		$body = $this->getBodyFromXml($response);
 		$challenge = base64_decode($body->firstChild->nodeValue);
@@ -394,7 +439,7 @@ class XmppPrebind {
 		$body->appendChild($response);
 
 
-		$challengeResponse = $this->send($domDocument->saveXML());
+		$challengeResponse = $this->send($domDocument->saveXML($body));
 
 		return $this->replyToChallengeResponse($challengeResponse);
 	}
@@ -422,7 +467,7 @@ class XmppPrebind {
 
 		$body->appendChild($response);
 
-		$challengeResponse = $this->send($domDocument->saveXML());
+		$challengeResponse = $this->send($domDocument->saveXML($body));
 
 		return $this->replyToChallengeResponse($challengeResponse);
 	}
@@ -507,11 +552,11 @@ class XmppPrebind {
 					$i = $i + 2 + $xlen;
 				}
 				if ( $flg & 8 )
-				$i = strpos($gzData, "\0", $i) + 1;
+					$i = strpos($gzData, "\0", $i) + 1;
 				if ( $flg & 16 )
-				$i = strpos($gzData, "\0", $i) + 1;
+					$i = strpos($gzData, "\0", $i) + 1;
 				if ( $flg & 2 )
-				$i = $i + 2;
+					$i = $i + 2;
 			}
 			return gzinflate( substr($gzData, $i, -8) );
 		} else {
@@ -619,7 +664,6 @@ class XmppPrebind {
 	protected function getAndIncrementRid() {
 		return $this->rid++;
 	}
-
 }
 
 /**
@@ -627,4 +671,4 @@ class XmppPrebind {
  */
 class XmppPrebindException extends Exception{}
 
-class XmppPrebindConnectionException extends XmppPrebindException {}
+class XmppPrebindConnectionException extends XmppPrebindException{}
