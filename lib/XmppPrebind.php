@@ -66,16 +66,16 @@ class XmppPrebind {
 	protected $mechanisms = array();
 
 	// the Bosh attributes for use in a client using this prebound session
-	protected $wait,
-			$requests,
-			$ver,
-			$polling,
-			$inactivity,
-			$hold,
-			$to,
-			$ack,
-			$accept,
-			$maxpause;
+	protected $wait;
+	protected $requests;
+	protected $ver;
+	protected $polling;
+	protected $inactivity;
+	protected $hold;
+	protected $to;
+	protected $ack;
+	protected $accept;
+	protected $maxpause;
 
 	/**
 	 * Session creation response
@@ -226,16 +226,16 @@ class XmppPrebind {
 	public function getBoshInfo()
 	{
 		return array(
-				'wait' => $this->wait,
-				'requests' => $this->requests,
-				'ver' => $this->ver,
-				'polling' => $this->polling,
-				'inactivity' => $this->inactivity,
-				'hold' => $this->hold,
-				'to' => $this->to,
-				'ack' => $this->ack,
-				'accept' => $this->accept,
-				'maxpause' => $this->maxpause,
+			'wait' => $this->wait,
+			'requests' => $this->requests,
+			'ver' => $this->ver,
+			'polling' => $this->polling,
+			'inactivity' => $this->inactivity,
+			'hold' => $this->hold,
+			'to' => $this->to,
+			'ack' => $this->ack,
+			'accept' => $this->accept,
+			'maxpause' => $this->maxpause,
 		);
 	}
 
