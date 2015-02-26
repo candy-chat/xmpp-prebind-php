@@ -1,20 +1,29 @@
 {
-    "name": "candy-chat/xmpp-prebind-php",
+    "name": "piotr-cz/xmpp-prebind-php",
     "description": "This class is for prebinding a XMPP Session with PHP.",
+    "version": "0.1.0",
+    "type": "library",
+    "keywords": ["xmpp", "php", "prebind"],
+    "homepage": "http://jolicode.com",
+    "license": "MIT",
     "authors": [
-		{
-			"name": "Michael Weibel"
-		},
+        {
+            "name": "Michael Weibel"
+        },
         {
             "name": "piotr",
             "email": "hello@piotr.cz"
+        },
+        {
+            "name": "Alex Knol",
+            "email": "alex@cobrowser.net"
         }
     ],
     "autoload": {
         "classmap": ["lib/"]
     },
     "require": {
-		"php": ">=5.3",
-		"lib-libxml": "*"
-	}
+        "php": ">=5.3",
+        "lib-libxml": "*"
+    }
 }
