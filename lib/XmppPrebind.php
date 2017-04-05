@@ -90,7 +90,7 @@ class XmppPrebind {
 	 * @param string $jabberHost Jabber Server Host
 	 * @param string $boshUri    Full URI to the http-bind
 	 * @param string $resource   Resource identifier
-	 * @param bool   $useSsl     Use SSL (not working yet, TODO)
+	 * @param bool   $useSsl     Use SSL (working already)
 	 * @param bool   $debug      Enable debug
 	 */
 	public function __construct($jabberHost, $boshUri, $resource, $useSsl = false, $debug = false) {
@@ -133,62 +133,75 @@ class XmppPrebind {
 	 * @param string $username Username without jabber host
 	 * @param string $password Password
 	 * @param string $route Route
+         * @param integer $force_encryption_method
 	 */
-	public function connect($username, $password, $route = false) {
-		$this->jid      = $username . '@' . $this->jabberHost;
+	public function connect($username, $password, $route = false, $force_encryption_method = null)
+    {
+        $this->jid      = $username . '@' . $this->jabberHost;
 
-		if($this->resource) {
-			$this->jid .= '/' . $this->resource;
-		}
-
-		$this->password = $password;
-
-		$response = $this->sendInitialConnection($route);
-        if(empty($response)) {
-			throw new XmppPrebindConnectionException("No response from server.");
+        if($this->resource) {
+                $this->jid .= '/' . $this->resource;
         }
 
-		$body = self::getBodyFromXml($response);
-        if ( empty( $body ) )
-			throw new XmppPrebindConnectionException("No body could be found in response from server.");
-		$this->sid = $body->getAttribute('sid');
+        $this->password = $password;
 
-		// set the Bosh Attributes
-		$this->wait = $body->getAttribute('wait');
-		$this->requests = $body->getAttribute('requests');
-		$this->ver = $body->getAttribute('ver');
-		$this->polling = $body->getAttribute('polling');
-		$this->inactivity = $body->getAttribute('inactivity');
-		$this->hold = $body->getAttribute('hold');
-		$this->to = $body->getAttribute('to');
-		$this->accept = $body->getAttribute('accept');
-		$this->maxpause = $body->getAttribute('maxpause');
+        $response = $this->sendInitialConnection($route);
+        if(empty($response)) {
+            throw new XmppPrebindConnectionException("No response from server.");
+        }
 
-		$this->debug($this->sid, 'sid');
+        $body = self::getBodyFromXml($response);
+        if ( empty( $body ) ) {
+            throw new XmppPrebindConnectionException("No body could be found in response from server.");
+        }
+
+        $this->sid = $body->getAttribute('sid');
+
+        // set the Bosh Attributes
+        $this->wait = $body->getAttribute('wait');
+        $this->requests = $body->getAttribute('requests');
+        $this->ver = $body->getAttribute('ver');
+        $this->polling = $body->getAttribute('polling');
+        $this->inactivity = $body->getAttribute('inactivity');
+        $this->hold = $body->getAttribute('hold');
+        $this->to = $body->getAttribute('to');
+        $this->accept = $body->getAttribute('accept');
+        $this->maxpause = $body->getAttribute('maxpause');
+
+        $this->debug($this->sid, 'sid');
 
         if(empty($body->firstChild) || empty($body->firstChild->firstChild)) {
-			throw new XmppPrebindConnectionException("Child not found in response from server.");
+                throw new XmppPrebindConnectionException("Child not found in response from server.");
         }
-		$mechanisms = $body->getElementsByTagName('mechanism');
+        $mechanisms = $body->getElementsByTagName('mechanism');
 
-		foreach ($mechanisms as $value) {
-			$this->mechanisms[] = $value->nodeValue;
-		}
+        foreach ($mechanisms as $value) {
+                $this->mechanisms[] = $value->nodeValue;
+        }
 
-		if (in_array(self::ENCRYPTION_DIGEST_MD5, $this->mechanisms)) {
-			$this->encryption = self::ENCRYPTION_DIGEST_MD5;
-		} elseif (in_array(self::ENCRYPTION_CRAM_MD5, $this->mechanisms)) {
-			$this->encryption = self::ENCRYPTION_CRAM_MD5;
-		} elseif (in_array(self::ENCRYPTION_PLAIN, $this->mechanisms)) {
-			$this->encryption = self::ENCRYPTION_PLAIN;
-		} else {
-			throw new XmppPrebindConnectionException("No encryption supported by the server is supported by this library.");
-		}
+        if ($force_encryption_method !== null) {
+            if (in_array($force_encryption_method, $this->mechanisms)) {
+                $this->encryption = $force_encryption_method;
+            } else {
+                throw new XmppPrebindConnectionException("Forced encryption is not supported by the server.");
+            }
+        } else {
 
-		$this->debug($this->encryption, 'encryption used');
+            if (in_array(self::ENCRYPTION_DIGEST_MD5, $this->mechanisms)) {
+                $this->encryption = self::ENCRYPTION_DIGEST_MD5;
+            } elseif (in_array(self::ENCRYPTION_CRAM_MD5, $this->mechanisms)) {
+                $this->encryption = self::ENCRYPTION_CRAM_MD5;
+            } elseif (in_array(self::ENCRYPTION_PLAIN, $this->mechanisms)) {
+                $this->encryption = self::ENCRYPTION_PLAIN;
+            } else {
+                throw new XmppPrebindConnectionException("No encryption supported by the server is supported by this library.");
+            }
+        }
 
-		// Assign session creation response
-		$this->response = $body;
+        $this->debug($this->encryption, 'encryption used');
+
+        // Assign session creation response
+        $this->response = $body;
 	}
 
 	/**
@@ -519,6 +532,11 @@ class XmppPrebind {
 			$header[] = 'Accept-Encoding: gzip, deflate';
 		}
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+        if ($this->useSsl) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        }
 
 		curl_setopt($ch, CURLOPT_VERBOSE, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
