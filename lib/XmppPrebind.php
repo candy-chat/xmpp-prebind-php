@@ -166,10 +166,29 @@ class XmppPrebind {
 
 		$this->debug($this->sid, 'sid');
 
-        if(empty($body->firstChild) || empty($body->firstChild->firstChild)) {
-			throw new XmppPrebindConnectionException("Child not found in response from server.");
+		$mechanisms = null;
+		if(empty($body->firstChild) || empty($body->firstChild->firstChild)) {
+			// this is not good
+		} else {
+			$mechanisms = $body->getElementsByTagName('mechanism');
+		}
+
+		if(empty($mechanisms)) {
+			// Accorrding to https://xmpp.org/extensions/xep-0206.html
+			// If no <stream:features/> element is included in the connection manager's session creation response,
+			// then the client SHOULD send empty request elements until it receives a response containing a <stream:features/> element.
+			$response2 = $this->sendInitialConnection($route);
+			$body2 = self::getBodyFromXml($response2);
+			if(empty($body2->firstChild) || empty($body2->firstChild->firstChild)) {
+				throw new XmppPrebindConnectionException("Child not found in second response from server.");
+			} else {
+				$mechanisms = $body2->getElementsByTagName('mechanism');
+			}
+		}
+
+        if(empty($mechanisms)) {
+			throw new XmppPrebindConnectionException("Tag mechanism not found in response from server.");
         }
-		$mechanisms = $body->getElementsByTagName('mechanism');
 
 		foreach ($mechanisms as $value) {
 			$this->mechanisms[] = $value->nodeValue;
