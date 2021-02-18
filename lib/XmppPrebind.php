@@ -7,11 +7,6 @@
  */
 
 /**
- * FirePHP for debugging
- */
-include 'FirePHP/fb.php';
-
-/**
  * PEAR Auth_SASL
  */
 require 'Auth/SASL.php';
@@ -102,8 +97,12 @@ class XmppPrebind {
 
 		$this->debug = $debug;
 		if ($this->debug === true) {
-			$this->firePhp = FirePHP::getInstance(true);
-			$this->firePhp->setEnabled(true);
+			if (class_exists('FirePHP')){
+				$this->firePhp = FirePHP::getInstance(true);
+				$this->firePhp->setEnabled(true);
+			} else {
+				trigger_error('FirePHP must be installed to enable debugging.');
+			}
 		}
 
 		/* TODO: Not working
