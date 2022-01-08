@@ -1,5 +1,5 @@
 {
-    "name": "piotr-cz/xmpp-prebind-php",
+    "name": "candy-chat/xmpp-prebind-php",
     "description": "This class is for prebinding a XMPP Session with PHP.",
     "version": "0.1.0",
     "type": "library",
@@ -25,5 +25,8 @@
     "require": {
         "php": ">=5.3",
         "lib-libxml": "*"
+    },
+    "require-dev": {
+        "firephp/firephp-core": "^0.5.3"
     }
 }
